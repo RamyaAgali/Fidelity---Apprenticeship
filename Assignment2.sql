@@ -29,10 +29,60 @@ select customer_id, customer_name, address, phone_no from customers where email_
 order by customer_id;
 
 --4 change datatype
-alter table orders drop constraint 
+alter table orders drop constraint orders_customer_id_fkey;
+update customers set customer_id = regexp_replace(customer_id, '[^0-9]', '', 'g');
+alter table customers alter column customer_id type int using customer_id :: integer;
 
+--5 change field name
+alter table hotel_details rename column rating to hotel_rating;
 
+--6 hotel_info
+select concat(hotel_name, ' is a ', hotel_type, 'hotel') as hotel_info from hotel_details order by hotel_name desc;
 
+--7 order more than five times
+select h.hotel_id, h.hotel_name, count(o.order_id) as order_count 
+from hotel_details h 
+join orders o on h.hotel_id = o.hotel_id
+group by h.hotel_id, h.hotel_name
+having count(o.order_id) > 5 
+order by h.hotel_id asc;
+
+--8 not taken orders in specific month
+select hd.hotel_id, hd.hotel_name, hd.hotel_type
+from Hotel_details hd
+left join orders o on hd.hotel_id=o.hotel_id
+and o.order_date >='2019-05-01'
+and o.order_date<'2019-06-01'
+where O.order_id is null
+order by hd.hotel_id asc;
+
+--9 order detail	
+SELECT column_name,data_type
+FROM information_schema.columns
+WHERE table_name='orders';
+SELECT column_name,data_type
+FROM information_schema.columns
+WHERE table_name='Customers';
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_schema='public'
+AND table_name='orders';
+SELECT column_name,data_type
+FROM information_schema.columns
+WHERE table_schema='public'
+AND table_name='Customers';
+
+--10 Pizza
+create table customer(cust_id varchar(10), cust_name varchar(20), cust_phone bigint, cust_address varchar(20));
+alter table customer add constraint cust_pkey primary key(cust_id);
+create table delivery_partner(partner_id varchar(10) primary key, partner_name varchar(15), rating bigint);
+create table pizza(pizza_id varchar(10), cust_id varchar(10) references customer(cust_id), partner_id varchar(10) references delivery_partner(partner_id), 
+pizza_name varchar(15), pizza_type varchar(15), order_date date, amount bigint);
+insert into customer values (1, 'john', 555-1234),(2, 'jane', 5891234),(3, 'smith', 5551234);
+insert into delivery_partner values('p001', 'zomato', 8),('p002', 'blink', 6),('p003', 'swiggy', 10);
+insert into pizza values('a001', 1, 'p001','margherita', 'large', '2024-06-09', 500),
+('a002', 2, 'p002','Pepperoni', 'small', '2023-08-09', 800),('a003', 3, 'p003', 'onion','large', '2024-08-09', 900);
+update pizza set amount = amount * 0.97 where pizza_type = 'large';
 
 
 
