@@ -84,6 +84,24 @@ insert into pizza values('a001', 1, 'p001','margherita', 'large', '2024-06-09', 
 ('a002', 2, 'p002','Pepperoni', 'small', '2023-08-09', 800),('a003', 3, 'p003', 'onion','large', '2024-08-09', 900);
 update pizza set amount = amount * 0.97 where pizza_type = 'large';
 
+--11 
+create table salesman(salesman_id numeric(5), name varchar(30), city varchar(15), comission decimal(5,2));
+alter table salesman add constraint salesman_pk primary key(salesman_id);
+insert into salesman values(111, 'Jhon', 'mumbai', 300.00),(112, 'Adil','Delhi',200.00),(113, 'Abhi', 'Bangalore', 123.00);
+select*from salesman;
+create table ord(
+order_no numeric(5) primary key, 
+purch_amt decimal(8,2), ord_date date, customer_id numeric(5),
+salesman_id numeric(5),
+foreign key (salesman_id) references salesman(salesman_id)
+) ;
+
+--12
+create table supplier(supplier_id numeric(5), supplier_name varchar(150), address varchar(150), city varchar(50),
+state varchar(15), country varchar(15), contact varchar(10));
+select*from supplier;
+alter table supplier add constraint chk_contact check(length(contact) = 10);
+
 
 
 
